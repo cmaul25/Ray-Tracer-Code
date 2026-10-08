@@ -42,13 +42,12 @@ public:
     return x * rhs.x + y * rhs.y + z * rhs.z;
   }
 
-  Vector3 &cross(const Vector3 &rhs)
+  Vector3 cross(const Vector3 &rhs)
   {
-    Vector3 temp = Vector3{
+    return Vector3{
         y * rhs.z - z * rhs.y,
         z * rhs.x - x * rhs.z,
         x * rhs.y - y * rhs.x};
-    return temp;
   }
 
   float length()
@@ -56,25 +55,24 @@ public:
     return sqrt(x * x + y * y + z * z);
   }
 
-  Vector3 &normalize()
+  Vector3 normalize()
   {
     float l = length();
-    Vector3 temp = Vector3{x / l, y / l, z / l};
-    return temp;
+    return Vector3{x / l, y / l, z / l};
   }
 };
 
-inline Vector3 &operator+(Vector3 lhs, const Vector3 &rhs)
+inline Vector3 operator+(Vector3 lhs, const Vector3 &rhs)
 {
   return lhs += rhs;
 }
 
-inline Vector3 &operator-(Vector3 lhs, const Vector3 &rhs)
+inline Vector3 operator-(Vector3 lhs, const Vector3 &rhs)
 {
   return lhs -= rhs;
 }
 
-inline Vector3 &operator*(Vector3 lhs, const float rhs)
+inline Vector3 operator*(Vector3 lhs, const float rhs)
 {
   return lhs *= rhs;
 }
@@ -118,10 +116,7 @@ int main()
 
       Vector3 background_color = Vector3{150, 0, 255};
 
-      Vector3 target{
-        x/w*2-1, -(y/h*2-1), 0
-      };
-
+      Vector3 target{(float)x / w * 2 - 1, -((float)y / h * 2 - 1), 0};
 
       Vector3 ray = (target - camera_origin).normalize();
 
