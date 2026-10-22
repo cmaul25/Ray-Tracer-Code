@@ -31,7 +31,7 @@ int main()
   unsigned char pixels[w * h * 3];
 
   Triangle triangle = Triangle{Vector3{-1, 1, 0}, Vector3{-1, -1, 0}, Vector3{1, -1, 0}};
-  Triangle triangle2 = Triangle{Vector3{-1, 1, .5}, Vector3{-1, -1, -.5}, Vector3{1, -1, .5}};
+  Triangle triangle2 = Triangle{Vector3{1, 1, .5}, Vector3{-1, -1, -.5}, Vector3{1, -1, .5}};
 
   vector<Triangle> triangles = {triangle, triangle2};
 
