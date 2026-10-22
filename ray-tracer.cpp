@@ -4,89 +4,11 @@
 
 /// Uncomment these lines if you want to debug using couts
 #include <iostream>
+#include <vector>
+#include "Vector3.hpp"
+#include "Triangle.hpp"
+
 using namespace std;
-
-/// Uncomment these lines if you happen to add a Vector3 and want to debug :)
-
-class Vector3
-{
-public:
-  float x, y, z;
-
-  Vector3 &operator+=(const Vector3 &rhs)
-  {
-    x += rhs.x;
-    y += rhs.y;
-    z += rhs.z;
-    return *this;
-  }
-
-  Vector3 &operator-=(const Vector3 &rhs)
-  {
-    x -= rhs.x;
-    y -= rhs.y;
-    z -= rhs.z;
-    return *this;
-  }
-
-  Vector3 &operator*=(const float rhs)
-  {
-    x *= rhs;
-    y *= rhs;
-    z *= rhs;
-    return *this;
-  }
-
-  float dot(const Vector3 &rhs)
-  {
-    return x * rhs.x + y * rhs.y + z * rhs.z;
-  }
-
-  Vector3 cross(const Vector3 &rhs)
-  {
-    return  Vector3{
-        y * rhs.z - z * rhs.y,
-        z * rhs.x - x * rhs.z,
-        x * rhs.y - y * rhs.x};
-  }
-
-  float length()
-  {
-    return sqrt(x * x + y * y + z * z);
-  }
-
-  Vector3 normalize()
-  {
-    float l = length();
-    // cout << l << endl;
-    return Vector3{x / l, y / l, z / l};
-  }
-};
-
-inline Vector3 &operator+(Vector3 lhs, const Vector3 &rhs)
-{
-  return lhs += rhs;
-}
-
-inline Vector3 &operator-(Vector3 lhs, const Vector3 &rhs)
-{
-  return lhs -= rhs;
-}
-
-inline Vector3 &operator*(Vector3 lhs, const float rhs)
-{
-  return lhs *= rhs;
-}
-
-inline std::ostream &operator<<(std::ostream &os, const Vector3 &v)
-{
-  return os << '(' << v.x << ", " << v.y << ", " << v.z << ')';
-}
-
-class Triangle{
-  public:
-  Vector3 one, two, three;
-};
 
 int main()
 {
@@ -109,6 +31,9 @@ int main()
   unsigned char pixels[w * h * 3];
 
   Triangle triangle = Triangle{Vector3{-1, 1, 0}, Vector3{-1, -1, 0}, Vector3{1, -1, 0}};
+  Triangle triangle2 = Triangle{Vector3{-1, 1, .5}, Vector3{-1, -1, -.5}, Vector3{1, -1, .5}};
+
+  vector<Triangle> triangles = {triangle, triangle2};
 
   Vector3 background_color = Vector3{150, 0, 255};
 
@@ -136,12 +61,9 @@ int main()
       Vector3 camera_look_at = Vector3{0, 0, 0};
       Vector3 camera_up = Vector3{0, 1, 0};
 
-
       Vector3 target{
-        x/(float)w*2-1, -(y/(float)h*2-1), 0
-      };
-      
-      
+          x / (float)w * 2 - 1, -(y / (float)h * 2 - 1), 0};
+
       // cout<<"One"<<endl;
       Vector3 temp = (target - camera_origin);
       // cout<<temp<<endl;
@@ -149,61 +71,67 @@ int main()
       // cout << ray << endl;
       // cout<<"Two"<<endl;
 
-      //Find where we hit the plane
-      Vector3 edge_one = triangle.one - triangle.two;
-      Vector3 edge_two = triangle.three - triangle.two;
-      Vector3 p = edge_two.cross(edge_one);
-      Vector3 abc = p.normalize();
-      float d = -abc.dot(triangle.one);
 
-      float t = -(abc.dot(camera_origin)+d)/abc.dot(ray);
+      float closest_t = 1000000;
 
-      // cout << abc << " " << d << " " << t << endl;
+      for (const Triangle &triangle : triangles)
+      {
 
-      Vector3 collision_point = ray*t+camera_origin;
+        // Find where we hit the plane
+        Vector3 edge_one = triangle.one - triangle.two;
+        Vector3 edge_two = triangle.three - triangle.two;
+        Vector3 p = edge_two.cross(edge_one);
+        Vector3 abc = p.normalize();
+        float d = -abc.dot(triangle.one);
 
-      Vector3 minus_one = collision_point - triangle.one;
-      Vector3 minus_two = collision_point - triangle.two;
-      Vector3 minus_three = collision_point - triangle.three;
+        float t = -(abc.dot(camera_origin) + d) / abc.dot(ray);
 
-      float triangle_area = p.length()/2;
+        if(t > closest_t)
+          continue;
+        
 
-      float area_one = minus_two.cross(minus_three).length()/2;
-      float area_two = minus_three.cross(minus_one).length()/2;
-      float area_three = minus_one.cross(minus_two).length()/2;
+        // cout << abc << " " << d << " " << t << endl;
 
-      float u = area_one/triangle_area;
-      float v = area_two/triangle_area;
-      float a = area_three/triangle_area;
+        Vector3 collision_point = ray * t + camera_origin;
 
-      float sum = u + v + a;
+        Vector3 minus_one = collision_point - triangle.one;
+        Vector3 minus_two = collision_point - triangle.two;
+        Vector3 minus_three = collision_point - triangle.three;
 
-      float diff = abs(1-sum);
+        float triangle_area = p.length() / 2;
 
-      if(diff > .00001){
-        //I'm not in the triangle
+        float area_one = minus_two.cross(minus_three).length() / 2;
+        float area_two = minus_three.cross(minus_one).length() / 2;
+        float area_three = minus_one.cross(minus_two).length() / 2;
+
+        float u = area_one / triangle_area;
+        float v = area_two / triangle_area;
+        float a = area_three / triangle_area;
+
+        float sum = u + v + a;
+
+        float diff = abs(1 - sum);
+
+        if (diff > .00001)
+        {
+          // I'm not in the triangle
+        }
+        else
+        {
+          // I'm in the triangle
+          closest_t = t;
+
+          r = 255 * u + 0 * v + 255 * a;
+          g = 255 * u + 255 * v + 0 * a;
+          b = 0 * u + 0 * v + 0 * a;
+        }
       }
-      else{
-        //I'm in the triangle
-
-
-
-        r = 255 * u + 0 * v + 255 * a;
-        g = 255 * u + 255 * v + 0 * a;
-        b = 0 * u + 0 * v + 0 * a;
-      }
-
-
-      
 
       /// Assign the r, g, and b values to the pixel at index
       pixels[index] = r;
       pixels[index + 1] = g;
       pixels[index + 2] = b;
-
-      
     }
-    
   }
 
   /// Write the final image as a png
