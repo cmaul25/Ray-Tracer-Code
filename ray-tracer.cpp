@@ -7,11 +7,23 @@
 #include <vector>
 #include "Vector3.hpp"
 #include "Triangle.hpp"
+#include "file_util.h"
 
 using namespace std;
 
 int main()
 {
+
+  ///Demonstrate file_util
+  vector<string> lines = readLines("simple.obj");
+  for(const string& line : lines){
+    cout << line << endl;
+    vector<string> parts = split(line, ' ');
+    cout << parts[0] << endl;
+  }
+
+
+
   /// Example of how to debug with couts.
   /// You must uncomment the include and namespace lines above
   // cout << "Hello, world" << endl;
@@ -19,7 +31,7 @@ int main()
   Vector3 temp = Vector3{0, 0, 0};
   temp += Vector3{1, 1, 1};
 
-  cout << temp << endl;
+  // cout << temp << endl;
 
   /// Width of the final image
   const int w = 640;
