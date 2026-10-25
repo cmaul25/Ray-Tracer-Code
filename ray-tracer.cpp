@@ -21,7 +21,10 @@ int main()
     vector<string> parts = split(line, ' ');
     cout << parts[0] << endl;
   }
-
+  //Corbin: Evaluate each line and place it in coresponding array
+  //Corbin: Look at part[0] to determine how to handle the line
+  //Corbin: Then I need to make every v a Vector3
+  //Corbin: Then make every f into a Triangle class
 
 
   /// Example of how to debug with couts.
