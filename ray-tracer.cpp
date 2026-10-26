@@ -5,6 +5,7 @@
 /// Uncomment these lines if you want to debug using couts
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "Vector3.hpp"
 #include "Triangle.hpp"
 #include "file_util.h"
@@ -17,9 +18,9 @@ int main()
   ///Demonstrate file_util
   vector<string> lines = readLines("simple.obj");
   for(const string& line : lines){
-    cout << line << endl;
+    //cout << line << endl;
     vector<string> parts = split(line, ' ');
-    cout << parts[0] << endl;
+    //cout << parts[0] << endl;
   }
   //Corbin: Evaluate each line and place it in coresponding array
   //Corbin: Look at part[0] to determine how to handle the line
@@ -45,12 +46,12 @@ int main()
   /// The 1d array for storing the pixel we have generated
   unsigned char pixels[w * h * 3];
 
-  Triangle triangle = Triangle{Vector3{-1, 1, 0}, Vector3{-1, -1, 0}, Vector3{1, -1, 0}};
+  Triangle triangle = Triangle{Vector3{-1, 1, 0}, Vector3{-1, -1, 0}, Vector3{1, -1, 1}};
   Triangle triangle2 = Triangle{Vector3{1, 1, .5}, Vector3{-1, -1, -.5}, Vector3{1, -1, .5}};
 
   vector<Triangle> triangles = {triangle, triangle2};
 
-  Vector3 background_color = Vector3{150, 0, 255};
+  Vector3 background_color = Vector3{100, 0, 100};
 
   /// Loop over each line doing down
   for (int y = 0; y < h; y++)
@@ -93,27 +94,27 @@ int main()
       {
 
         // Find where we hit the plane
-        Vector3 edge_one = triangle.one - triangle.two;
-        Vector3 edge_two = triangle.three - triangle.two;
-        Vector3 p = edge_two.cross(edge_one);
-        Vector3 abc = p.normalize();
-        float d = -abc.dot(triangle.one);
+        Vector3 edge_one = triangle.Vone - triangle.Vtwo;
+        Vector3 edge_two = triangle.Vthree - triangle.Vtwo;
+        Vector3 plane_direction = edge_two.cross(edge_one);
+        Vector3 normalized_plane_direction = plane_direction.normalize();
+        float d = -normalized_plane_direction.dot(triangle.Vone);
 
-        float t = -(abc.dot(camera_origin) + d) / abc.dot(ray);
+        float t = -(normalized_plane_direction.dot(camera_origin) + d) / normalized_plane_direction.dot(ray);
 
         if(t > closest_t)
           continue;
         
 
-        // cout << abc << " " << d << " " << t << endl;
+        // cout << normalized_plane_direction << " " << d << " " << t << endl;
 
         Vector3 collision_point = ray * t + camera_origin;
 
-        Vector3 minus_one = collision_point - triangle.one;
-        Vector3 minus_two = collision_point - triangle.two;
-        Vector3 minus_three = collision_point - triangle.three;
+        Vector3 minus_one = collision_point - triangle.Vone;
+        Vector3 minus_two = collision_point - triangle.Vtwo;
+        Vector3 minus_three = collision_point - triangle.Vthree;
 
-        float triangle_area = p.length() / 2;
+        float triangle_area = plane_direction.length() / 2;
 
         float area_one = minus_two.cross(minus_three).length() / 2;
         float area_two = minus_three.cross(minus_one).length() / 2;
@@ -135,10 +136,19 @@ int main()
         {
           // I'm in the triangle
           closest_t = t;
+          r = 255 * u + 255 * v + 255 * a;
+          g = 255 * u + 255 * v + 255 * a;
+          b = 255 * u + 255 * v + 255 * a;
+          //Trying to shade by distance
+          //darken subtrace from all values
+          int darken = t;
+          r=r-t;
+          g=g-t;
+          b=b-t;
+          // r = std::max((0 * u + 0 * v + 255 * a)-darken,(float)0);
+          // g = std::max((255 * u + 255 * v + 255 * a)-darken,(float)0);
+          // b = std::max((255 * u + 255 * v + 255 * a)-darken,(float)0);
 
-          r = 255 * u + 0 * v + 255 * a;
-          g = 255 * u + 255 * v + 0 * a;
-          b = 0 * u + 0 * v + 0 * a;
         }
       }
 
