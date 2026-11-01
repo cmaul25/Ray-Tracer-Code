@@ -9,20 +9,23 @@
 #include "Vector3.hpp"
 #include "Triangle.hpp"
 #include "file_util.h"
+#include "objHandler.hpp"
 
 using namespace std;
 
 int main()
 {
-
+  //initialize objhandler
+  objHandler objHandler;
   ///Demonstrate file_util
   vector<string> lines = readLines("simple.obj");
   for(const string& line : lines){
     //cout << line << endl;
     vector<string> parts = split(line, ' ');
     //cout << parts[0] << endl;
+    objHandler.evaluateObjFileLine(parts);
   }
-  //Corbin: Evaluate each line and place it in coresponding array
+  //Corbin: Evasluate each line and place it in coresponding array
   //Corbin: Look at part[0] to determine how to handle the line
   //Corbin: Then I need to make every v a Vector3
   //Corbin: Then make every f into a Triangle class
@@ -46,10 +49,12 @@ int main()
   /// The 1d array for storing the pixel we have generated
   unsigned char pixels[w * h * 3];
 
-  Triangle triangle = Triangle{Vector3{-1, 1, 0}, Vector3{-1, -1, 0}, Vector3{1, -1, 1}};
-  Triangle triangle2 = Triangle{Vector3{1, 1, .5}, Vector3{-1, -1, -.5}, Vector3{1, -1, .5}};
+  // Triangle triangle = Triangle{Vector3{-1, 1, 0}, Vector3{-1, -1, 0}, Vector3{1, -1, 1}};
+  // Triangle triangle2 = Triangle{Vector3{1, 1, .5}, Vector3{-1, -1, -.5}, Vector3{1, -1, .5}};
 
-  vector<Triangle> triangles = {triangle, triangle2};
+  // vector<Triangle> triangles = {triangle, triangle2};
+
+
 
   Vector3 background_color = Vector3{100, 0, 100};
 
@@ -90,7 +95,7 @@ int main()
 
       float closest_t = 1000000;
 
-      for (const Triangle &triangle : triangles)
+      for (const Triangle &triangle : objHandler.triangles)
       {
 
         // Find where we hit the plane
