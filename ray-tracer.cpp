@@ -54,8 +54,6 @@ int main()
 
   // vector<Triangle> triangles = {triangle, triangle2};
 
-
-
   Vector3 background_color = Vector3{100, 0, 100};
 
   /// Loop over each line doing down
@@ -141,15 +139,15 @@ int main()
         {
           // I'm in the triangle
           closest_t = t;
-          r = 255 * u + 255 * v + 255 * a;
-          g = 255 * u + 255 * v + 255 * a;
-          b = 255 * u + 255 * v + 255 * a;
+          r = 255 * u + 0 * v + 255 * a;
+          g = 0 * u + 0 * v + 0 * a;
+          b = 0 * u + 255 * v + 255 * a;
           //Trying to shade by distance
           //darken subtrace from all values
-          int darken = t;
-          r=r-t;
-          g=g-t;
-          b=b-t;
+          // int darken = t;
+          // r=r-t;
+          // g=g-t;
+          // b=b-t;
           // r = std::max((0 * u + 0 * v + 255 * a)-darken,(float)0);
           // g = std::max((255 * u + 255 * v + 255 * a)-darken,(float)0);
           // b = std::max((255 * u + 255 * v + 255 * a)-darken,(float)0);
