@@ -14,14 +14,14 @@
 using namespace std;
 
 //constants
-/// The 1d array for storing the pixel we have generated
-unsigned char pixels[w * h * 3];
 /// Width of the final image
 const int w = 640;
 
 /// Height of the final image
 const int h = 640;
 
+/// The 1d array for storing the pixel we have generated
+unsigned char pixels[w * h * 3];
 Vector3 background_color = Vector3{100, 0, 100};
 
 
