@@ -144,7 +144,7 @@ Vector3 trace_ray(Vector3 origin, Vector3 direction, objHandler objHandler,int b
         // float strength = abs(light_direction.dot(normal));
 
         Vector3 diffuse = base_color * strength;
-        if(trace_ray_distance(collision_point, light_direction,objHandler) != INFINITY){
+        if(trace_ray_distance(collision_point + light_direction*.00001, light_direction,objHandler) != INFINITY){
           diffuse = Vector3{0,0,0};
         }
 
