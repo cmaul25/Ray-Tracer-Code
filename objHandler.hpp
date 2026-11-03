@@ -54,6 +54,7 @@ struct objHandler{
       } else if (parts[0] == "vn"){
         vector_normals.push_back(Vector3{std::stof(parts[1]),std::stof(parts[2]),std::stof(parts[3])});
       } else if (parts[0] == "f"){
+        //get vector index information
         index1=std::stoi(std::string(1, parts[1][0]));
         index2=std::stoi(std::string(1, parts[2][0]));
         index3=std::stoi(std::string(1, parts[3][0]));
