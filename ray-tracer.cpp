@@ -22,7 +22,7 @@ const int h = 640;
 
 /// The 1d array for storing the pixel we have generated
 unsigned char pixels[w * h * 3];
-Vector3 background_color = Vector3{100, 0, 100};
+Vector3 background_color = Vector3{150, 0, 100};
 
 
 float trace_ray_distance(Vector3 origin, Vector3 direction, objHandler objHandler)
@@ -153,7 +153,7 @@ Vector3 trace_ray(Vector3 origin, Vector3 direction, objHandler objHandler,int b
 
         if(true){
           Vector3 reflective_direction = direction - normal * 2 * normal.dot(direction);
-          reflective = trace_ray(collision_point, reflective_direction, objHandler ,bounces - 1) * .5;
+          reflective = trace_ray(collision_point+reflective_direction*.00001, reflective_direction, objHandler ,bounces - 1) * .5;
           diffuse *=.5;
           ambient *= .5;
 
