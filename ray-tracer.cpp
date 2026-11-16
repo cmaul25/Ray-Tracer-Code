@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <omp.h>
 #include "Vector3.hpp"
 #include "Triangle.hpp"
 #include "file_util.h"
@@ -89,7 +90,10 @@ Vector3 trace_ray(Vector3 origin, Vector3 direction, const objHandler& objHandle
     return background_color;
 
       float closest_t = 1000000;
-
+      //Variables we need after the loop
+      Vector3 best_collision_point;
+      Vector3 best_plane_direction;
+      bool found_hit = false;
       for (const Triangle &triangle : objHandler.triangles)
       {
 
@@ -133,38 +137,41 @@ Vector3 trace_ray(Vector3 origin, Vector3 direction, const objHandler& objHandle
         {
         // I'm in the triangle
         closest_t = t;
-
-        Vector3 base_color = Vector3{255, 255, 255};
-        Vector3 light_direction = Vector3{.5, 1, .5}.normalize();
-
-        Vector3 ambient = base_color * .1;
-        Vector3 normal = plane_direction.normalize();
-
-        float strength = max(0.f, light_direction.dot(normal));
-        // float strength = abs(light_direction.dot(normal));
-
-        Vector3 diffuse = base_color * strength;
-        if(trace_ray_distance(collision_point + light_direction*.00001, light_direction,objHandler) != INFINITY){
-          diffuse = Vector3{0,0,0};
+        best_collision_point=collision_point;
+        best_plane_direction=plane_direction;
+        found_hit = true;
         }
+      }
+      if(found_hit){
+      //do shading for closest collison
+      Vector3 base_color = Vector3{255, 255, 255};
+      Vector3 light_direction = Vector3{.5, 1, .5}.normalize();
+
+      Vector3 ambient = base_color * .1;
+      Vector3 normal = best_plane_direction.normalize();
+
+      float strength = max(0.f, light_direction.dot(normal));
+      // float strength = abs(light_direction.dot(normal));
+
+      Vector3 diffuse = base_color * strength;
+      if(trace_ray_distance(best_collision_point + light_direction*.00001, light_direction,objHandler) != INFINITY){
+        diffuse = Vector3{0,0,0};
+      }
 
 
-        Vector3 reflective = Vector3{0, 0, 0};
+      Vector3 reflective = Vector3{0, 0, 0};
 
-        if(true){
-          Vector3 reflective_direction = direction - normal * 2 * normal.dot(direction);
-          reflective = trace_ray(collision_point+reflective_direction*.00001, reflective_direction, objHandler ,bounces - 1) * .5;
-          diffuse *=.5;
-          ambient *= .5;
+      if(true){
+        Vector3 reflective_direction = direction - normal * 2 * normal.dot(direction);
+        reflective = trace_ray(best_collision_point+reflective_direction*.00001, reflective_direction, objHandler ,bounces - 1) * .5;
+        diffuse *=.5;
+        ambient *= .5;
+      }
 
-        }
+      Vector3 _color = ambient + diffuse + reflective;
 
-        Vector3 _color = ambient + diffuse + reflective;
-
-        color = _color;
-     
+      color = _color;
     }
-  }
   return color;
 }
 
@@ -173,7 +180,7 @@ int main()
   //initialize objhandler
   objHandler objHandler;
   ///Demonstrate file_util
-  vector<string> lines = readLines("simple2.obj");
+  vector<string> lines = readLines("roomtutorial.obj");
   for(const string& line : lines){
     //cout << line << endl;
     vector<string> parts = split(line, ' ');
@@ -193,6 +200,8 @@ int main()
   Vector3 camera_origin = Vector3{0, 0, 1};
   Vector3 camera_look_at = Vector3{0, 0, 0};
   Vector3 camera_up = Vector3{0, 1, 0};
+  //parallelize loop
+  #pragma omp parallel for collapse(2)
   /// Loop over each line doing down
   for (int y = 0; y < h; y++)
   {
