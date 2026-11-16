@@ -25,7 +25,7 @@ unsigned char pixels[w * h * 3];
 Vector3 background_color = Vector3{150, 0, 100};
 
 
-float trace_ray_distance(Vector3 origin, Vector3 direction, objHandler objHandler)
+float trace_ray_distance(Vector3 origin, Vector3 direction, const objHandler& objHandler)
 {
   float closest_t = INFINITY;
 
@@ -82,7 +82,7 @@ float trace_ray_distance(Vector3 origin, Vector3 direction, objHandler objHandle
   return closest_t;
 }
 
-Vector3 trace_ray(Vector3 origin, Vector3 direction, objHandler objHandler,int bounces = 2000)
+Vector3 trace_ray(Vector3 origin, Vector3 direction, const objHandler& objHandler,int bounces = 2000)
 {
   Vector3 color = Vector3{background_color.x, background_color.y, background_color.z};
   if(bounces <= 0)
@@ -173,7 +173,7 @@ int main()
   //initialize objhandler
   objHandler objHandler;
   ///Demonstrate file_util
-  vector<string> lines = readLines("simple.obj");
+  vector<string> lines = readLines("simple2.obj");
   for(const string& line : lines){
     //cout << line << endl;
     vector<string> parts = split(line, ' ');

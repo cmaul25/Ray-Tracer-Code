@@ -18,6 +18,7 @@ struct objHandler{
   char index3;
   int index_extra;
   int indexs_found;
+  std::vector<std::string> triangle_vector_indexes= {};
   public:
   std::vector<Triangle> triangles = {};
   //obj faces start at index one so fill 0 index with 0
@@ -25,7 +26,7 @@ struct objHandler{
   std::vector<Vector3> vector_normals ={zero_vector};
   std::vector<Vector3> vector_uv = {zero_vector};
 
-  void evaluateObjFileLine(std::vector<std::string> parts){
+  void evaluateObjFileLine( const std::vector<std::string>& parts){
       if (parts[0] == "v"){
         indexs_found = 0;
         index1 = 'n';
@@ -55,14 +56,15 @@ struct objHandler{
         vector_normals.push_back(Vector3{std::stof(parts[1]),std::stof(parts[2]),std::stof(parts[3])});
       } else if (parts[0] == "f"){
         //get vector index information
-        index1=std::stoi(std::string(1, parts[1][0]));
-        index2=std::stoi(std::string(1, parts[2][0]));
-        index3=std::stoi(std::string(1, parts[3][0]));
+        triangle_vector_indexes=split(parts[1],'/');
+        index1=std::stoi(triangle_vector_indexes[0]);
+        triangle_vector_indexes=split(parts[2],'/');
+        index2=std::stoi(triangle_vector_indexes[0]);
+        triangle_vector_indexes=split(parts[3],'/');
+        index3=std::stoi(triangle_vector_indexes[0]);
         triangles.push_back(Triangle{vectors[index1],vectors[index2],vectors[index3]});
       } 
   }
 };
-
-
 
 #endif
