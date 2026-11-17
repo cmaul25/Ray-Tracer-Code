@@ -180,13 +180,16 @@ int main()
   //initialize objhandler
   objHandler objHandler;
   ///Demonstrate file_util
-  vector<string> lines = readLines("roomtutorial.obj");
+  vector<string> lines = readLines("simple.obj");
   for(const string& line : lines){
-    //cout << line << endl;
+    cout << line << endl;
     vector<string> parts = split(line, ' ');
-    //cout << parts[0] << endl;
+    cout << parts[1] << endl;
     objHandler.evaluateObjFileLine(parts);
   }
+  // for (const Vector3& v : objHandler.vectors){
+  // cout << v << '\n';
+  // }
   //Corbin: Evasluate each line and place it in coresponding array
   //Corbin: Look at part[0] to determine how to handle the line
   //Corbin: Then I need to make every v a Vector3
